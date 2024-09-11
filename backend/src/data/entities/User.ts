@@ -6,10 +6,10 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @OneToMany(() => UserWatchlistItem, (watchlistItem) => watchlistItem.user)
+    @OneToMany(() => UserWatchlistItem, (watchlistItem) => watchlistItem.user, {eager: true})
     watchlistItems: UserWatchlistItem[]
 
-    getWatchlistItemSymbols() {
+    public getWatchlistItemSymbols(): string[] {
         return this.watchlistItems.map(watchlistItem => watchlistItem.stockSymbol);
     }
 }

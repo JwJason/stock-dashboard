@@ -2,6 +2,7 @@ import { EntityManager, Repository } from 'typeorm';
 import memoryCache, { CacheClass } from 'memory-cache';
 import {User} from "../data/entities/User";
 import {UserWatchlistItem} from "../data/entities/UserWatchlistItem";
+import createHttpError from "http-errors";
 
 class UserWatchlistService {
     private userRepository: Repository<User>;
@@ -12,11 +13,11 @@ class UserWatchlistService {
         this.cache = new memoryCache.Cache();
     }
 
-    async addToUserWatchlist(userId: number, stockSymbol: string): Promise<void> {
+    async addToUserWatchlist(userId: number, stockSymbol: string): Promise<string[]> {
         try {
             const user = await this.userRepository.findOne({ where: { id: userId } });
             if (!user) {
-                throw new Error('User not found');
+                throw new createHttpError.NotFound('User not found');
             }
 
             const watchlistItem = new UserWatchlistItem();
@@ -25,6 +26,8 @@ class UserWatchlistService {
             await this.userRepository.save(user);
 
             this.cache.put(`user_watchlist_${userId}`, user.getWatchlistItemSymbols());
+
+            return user.getWatchlistItemSymbols();
         } catch (error) {
             console.error('Error updating user watchlist:', error);
             throw error;
@@ -40,7 +43,7 @@ class UserWatchlistService {
 
             const user = await this.userRepository.findOne({ where: { id: userId } });
             if (!user) {
-                throw new Error('User not found');
+                throw new createHttpError.NotFound('User not found');
             }
 
             this.cache.put(`user_watchlist_${userId}`, user.getWatchlistItemSymbols());
