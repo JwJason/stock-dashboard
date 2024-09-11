@@ -6,7 +6,7 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @OneToMany(() => UserWatchlistItem, (watchlistItem) => watchlistItem.user, {eager: true})
+    @OneToMany(() => UserWatchlistItem, (watchlistItem) => watchlistItem.user, {eager: true, cascade: true})
     watchlistItems: UserWatchlistItem[]
 
     public getWatchlistItemSymbols(): string[] {
