@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import "reflect-metadata";
 import http from 'http';
 import { WebSocket } from 'ws';
 

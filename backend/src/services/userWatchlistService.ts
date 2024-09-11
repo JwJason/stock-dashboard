@@ -24,8 +24,7 @@ class UserWatchlistService {
             user.watchlistItems.push(watchlistItem);
             await this.userRepository.save(user);
 
-            // Update memory cache
-            // this.cache.set(`user_stock_symbols_${userId}`, symbols);
+            this.cache.put(`user_watchlist_${userId}`, user.getWatchlistItemSymbols());
         } catch (error) {
             console.error('Error updating user watchlist:', error);
             throw error;
@@ -34,22 +33,19 @@ class UserWatchlistService {
 
     async getUserWatchlist(userId: number): Promise<string[]> {
         try {
-            // Try to get from cache first
-            // const cachedSymbols = this.cache.get(`user_watchlist_${userId}`);
-            // if (cachedSymbols) {
-            //     return cachedSymbols;
-            // }
+            const cachedWatchlist = this.cache.get(`user_watchlist_${userId}`);
+            if (cachedWatchlist) {
+                return cachedWatchlist;
+            }
 
-            // If not in cache, query the database
             const user = await this.userRepository.findOne({ where: { id: userId } });
             if (!user) {
                 throw new Error('User not found');
             }
 
-            // Update cache with fetched data
-            // this.cache.set(`user_stock_symbols_${userId}`, user.stockSymbols);
+            this.cache.put(`user_watchlist_${userId}`, user.getWatchlistItemSymbols());
 
-            return user.watchlistItems.map(watchlistItem => watchlistItem.stockSymbol);
+            return user.getWatchlistItemSymbols();
         } catch (error) {
             console.error('Error retrieving user watchlist:', error);
             throw error;

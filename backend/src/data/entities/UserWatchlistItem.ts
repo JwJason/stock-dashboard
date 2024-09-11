@@ -9,6 +9,6 @@ export class UserWatchlistItem {
     @Column()
     stockSymbol: string
 
-    @ManyToOne(() => User, (user) => user.watchlist)
+    @ManyToOne(() => User, (user) => user.watchlistItems)
     user: User
 }

@@ -8,4 +8,8 @@ export class User {
 
     @OneToMany(() => UserWatchlistItem, (watchlistItem) => watchlistItem.user)
     watchlistItems: UserWatchlistItem[]
+
+    getWatchlistItemSymbols() {
+        return this.watchlistItems.map(watchlistItem => watchlistItem.stockSymbol);
+    }
 }
