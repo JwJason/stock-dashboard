@@ -3,10 +3,10 @@
 
 ## TODO for future
 - Add authentication
-- Add a production-appropriate postgres / mysql data source (currently just using sqlite for local development) 
+- Add a production-appropriate data source (currently just using a synced sqlite db for local development) 
 
 ## Installation
 
 ### Seed
 
-TODO
+- TODO: Define how to seed

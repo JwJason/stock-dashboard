@@ -1,17 +1,24 @@
 import WebSocket from 'ws';
-import UserWatchlistService from "../services/userWatchlistService";
-import {getDataSource} from "../config/db/db";
+import  {watchlistService} from "../services/watchlistService";
+import http from "http";
+import {stockPriceService} from "../services/stockPriceService";
+import WebSocketMessageClientData from "../models/WebSocketMessageClientData";
 
-export const handlePriceUpdateInterval = async (ws: WebSocket, userId: number) => {
-    const userWatchlistService = new UserWatchlistService(getDataSource().manager);
-    const userWatchlist = await userWatchlistService.getUserWatchlist(userId);
-
-    const mockedResults = userWatchlist.map(watchlistItem => {
-        return {
-            symbol: watchlistItem,
-            price: Math.floor(Math.random() * 100),
+/**
+ * Sends stock price data for all stocks in the user's watchlist
+ */
+export const handlePriceUpdateInterval = async (ws: WebSocket, request: http.IncomingMessage) => {
+    try {
+        const clientData = WebSocketMessageClientData.createFromIncomingMessage(request);
+        const userWatchlist = await watchlistService.getWatchlist(clientData.getUserId());
+        const stockPrices = await stockPriceService.getStockPrices(userWatchlist);
+        ws.send(JSON.stringify({ 'prices': stockPrices }));
+    } catch (err) {
+        console.error(err);
+        if (err instanceof Error) {
+            ws.send(JSON.stringify({ 'error': err.message }))
+        } else {
+            ws.send(JSON.stringify({ 'error': 'An unknown error occurred' }))
         }
-    });
-
-    ws.send(JSON.stringify({ 'prices': mockedResults }));
+    }
 }

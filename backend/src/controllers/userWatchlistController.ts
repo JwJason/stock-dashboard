@@ -1,17 +1,14 @@
 import { Request, Response } from 'express';
-import UserWatchlistService from "../services/userWatchlistService";
-import {getDataSource} from "../config/db/db";
-import {handleError} from "../handlers/errorHandler";
-import CreateUserWatchlistItemRequest from "../models/CreateUserWatchlistItemRequest";
+import { watchlistService } from "../services/watchlistService";
+import { handleError } from "../handlers/errorHandler";
+import WatchlistItemCreationRequestData from "../models/WatchlistItemCreationRequestData";
 
-const userWatchlistService = new UserWatchlistService(getDataSource().manager);
-
-export const getUserWatchlist = (req: Request, res: Response) => {
+export const getWatchlistItems = (req: Request, res: Response) => {
     try {
         const userId = parseInt(req.params.id);
-        userWatchlistService.getUserWatchlist(userId).then((userWatchlist) => {
+        watchlistService.getWatchlist(userId).then((watchlist) => {
             return res.status(200).json({
-                'userWatchlistItems': userWatchlist,
+                'watchlistItems': watchlist,
             });
         }).catch((err) => {
             return handleError(err, res);
@@ -21,16 +18,16 @@ export const getUserWatchlist = (req: Request, res: Response) => {
     }
 };
 
-export const createUserWatchlistItem = (req: Request, res: Response) => {
-    // TODO - Get userId from auth; it's currently defined in the request body
+export const createWatchlistItem = (req: Request, res: Response) => {
+    // TODO - Get userId from auth; it's currently defined in the request params
     try {
-        const requestData = CreateUserWatchlistItemRequest.createFromRequest(req);
-        userWatchlistService.addToUserWatchlist(
+        const requestData = WatchlistItemCreationRequestData.createFromRequest(req);
+        watchlistService.addToWatchlist(
             requestData.getUserId(),
             requestData.getStockSymbol()
-        ).then((userWatchlist) => {
+        ).then((watchlist) => {
             return res.status(201).json({
-                'userWatchlistItems': userWatchlist,
+                'watchlistItems': watchlist,
             });
         }).catch((err) => {
             return handleError(err, res);

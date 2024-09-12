@@ -3,8 +3,14 @@ import memoryCache, { CacheClass } from 'memory-cache';
 import {User} from "../data/entities/User";
 import {UserWatchlistItem} from "../data/entities/UserWatchlistItem";
 import createHttpError from "http-errors";
+import {getDataSource} from "../config/db/db";
 
-class UserWatchlistService {
+const cachePrefix = 'user_watchlist_';
+
+/**
+ * Service for interacting with the user's stock watchlist data.
+ */
+export class WatchlistService {
     private userRepository: Repository<User>;
     private cache: CacheClass<string, string[]>;
 
@@ -13,7 +19,9 @@ class UserWatchlistService {
         this.cache = new memoryCache.Cache();
     }
 
-    async addToUserWatchlist(userId: number, stockSymbol: string): Promise<string[]> {
+    public async addToWatchlist(userId: number, stockSymbol: string): Promise<string[]> {
+        const cachePath = `${cachePrefix}${userId}`;
+
         try {
             const user = await this.userRepository.findOne({ where: { id: userId } });
             if (!user) {
@@ -25,18 +33,20 @@ class UserWatchlistService {
             user.watchlistItems.push(watchlistItem);
             await this.userRepository.save(user);
 
-            this.cache.put(`user_watchlist_${userId}`, user.getWatchlistItemSymbols());
+            this.cache.put(cachePath, user.getWatchlistItemSymbols());
 
             return user.getWatchlistItemSymbols();
-        } catch (error) {
-            console.error('Error updating user watchlist:', error);
-            throw error;
+        } catch (err) {
+            console.error('Error updating user watchlist:', err);
+            throw err;
         }
     }
 
-    async getUserWatchlist(userId: number): Promise<string[]> {
+    public async getWatchlist(userId: number): Promise<string[]> {
+        const cachePath = `${cachePrefix}${userId}`;
+
         try {
-            const cachedWatchlist = this.cache.get(`user_watchlist_${userId}`);
+            const cachedWatchlist = this.cache.get(cachePath);
             if (cachedWatchlist) {
                 return cachedWatchlist;
             }
@@ -46,14 +56,14 @@ class UserWatchlistService {
                 throw new createHttpError.NotFound('User not found');
             }
 
-            this.cache.put(`user_watchlist_${userId}`, user.getWatchlistItemSymbols());
+            this.cache.put(cachePath, user.getWatchlistItemSymbols());
 
             return user.getWatchlistItemSymbols();
-        } catch (error) {
-            console.error('Error retrieving user watchlist:', error);
-            throw error;
+        } catch (err) {
+            console.error('Error retrieving user watchlist:', err);
+            throw err;
         }
     }
 }
 
-export default UserWatchlistService;
+export const watchlistService = new WatchlistService(getDataSource().manager);

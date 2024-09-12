@@ -1,11 +1,10 @@
 import {Request} from "express";
 import createHttpError from "http-errors";
 
-export default class CreateUserWatchlistItemRequest {
-    constructor(private readonly userId: number, private readonly stockSymbol: string) {
-    }
+export default class WatchlistItemCreationRequestData {
+    constructor(private readonly userId: number, private readonly stockSymbol: string) { }
 
-    static createFromRequest(req: Request): CreateUserWatchlistItemRequest {
+    static createFromRequest(req: Request): WatchlistItemCreationRequestData {
         const userId = parseInt(req.params.id);
         const stockSymbol = req.body.stockSymbol;
 
@@ -19,7 +18,7 @@ export default class CreateUserWatchlistItemRequest {
             throw new createHttpError.BadRequest('Request stockSymbol cannot be null');
         }
 
-        return new CreateUserWatchlistItemRequest(userId, stockSymbol);
+        return new WatchlistItemCreationRequestData(userId, stockSymbol);
     }
 
     public getUserId(): number {

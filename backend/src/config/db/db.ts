@@ -5,9 +5,9 @@ const connectDB = async (dataSource: DataSource) => {
     try {
         await dataSource.initialize();
         console.debug(`Database connected successfully`);
-    } catch (error) {
-        if (error instanceof Error) {
-            console.error('Error connecting to database:', error.message);
+    } catch (err) {
+        if (err instanceof Error) {
+            console.error('Error connecting to database:', err.message);
         } else {
             console.error('Unknown error connecting to database');
         }
