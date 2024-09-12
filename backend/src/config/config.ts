@@ -14,10 +14,6 @@ const config = {
     http: {
         port: process.env.HTTP_PORT || 3000,
     },
-
-    websocket: {
-        port: process.env.WEBSOCKET_PORT || 3002,
-    },
 };
 
 export default config;
