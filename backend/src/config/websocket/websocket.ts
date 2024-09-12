@@ -2,7 +2,7 @@ import WebSocket from 'ws';
 import http from "http";
 
 export interface PeriodicTask {
-    handler: (ws: WebSocket) => Promise<void>;
+    handler: (ws: WebSocket, userId: number) => Promise<void>;
     interval: number;
 }
 
@@ -14,7 +14,7 @@ export const configureWebSocket = (
         console.debug(`Client connected (userId=${userId})`);
 
         const intervals = periodicTasks.map(task =>
-            setInterval(() => task.handler(ws), task.interval)
+            setInterval(() => task.handler(ws, userId), task.interval)
         );
 
         ws.on('close', () => {
