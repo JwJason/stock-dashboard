@@ -31,10 +31,7 @@ export class WatchlistService {
         throw new createHttpError.NotFound("User not found");
       }
 
-      const alreadyInWatchlist = await watchlistService.isInWatchlist(
-        stockSymbol,
-        userId,
-      );
+      const alreadyInWatchlist = await this.isInWatchlist(stockSymbol, userId);
       if (alreadyInWatchlist) {
         throw new createHttpError.BadRequest("Symbol already in watchlist");
       }
