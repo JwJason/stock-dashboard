@@ -26,6 +26,7 @@ export const getWatchlistItems = (req: Request, res: Response) => {
 export const createWatchlistItem = (req: Request, res: Response) => {
   try {
     const requestData = WatchlistItemCreationRequestData.createFromRequest(req);
+
     watchlistService
       .addToWatchlist(requestData.getUserId(), requestData.getStockSymbol())
       .then((watchlist) => {
