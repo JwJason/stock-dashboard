@@ -1,15 +1,21 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn} from "typeorm"
-import {User} from "./User";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from "typeorm";
+import { User } from "./User";
 
 @Entity()
 export class UserWatchlistItem {
-    @PrimaryGeneratedColumn()
-    id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    stockSymbol: string
+  @Column()
+  stockSymbol: string;
 
-    @ManyToOne(() => User, (user) => user.watchlistItems)
-    @JoinColumn([{ name: "userId", referencedColumnName: "id" }])
-    user: User
+  @ManyToOne(() => User, (user) => user.watchlistItems)
+  @JoinColumn([{ name: "userId", referencedColumnName: "id" }])
+  user: User;
 }
