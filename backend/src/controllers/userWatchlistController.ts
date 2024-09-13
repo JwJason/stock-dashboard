@@ -24,7 +24,6 @@ export const getWatchlistItems = (req: Request, res: Response) => {
 };
 
 export const createWatchlistItem = (req: Request, res: Response) => {
-  // TODO - Get userId from auth; it's currently defined in the request params
   try {
     const requestData = WatchlistItemCreationRequestData.createFromRequest(req);
     watchlistService
